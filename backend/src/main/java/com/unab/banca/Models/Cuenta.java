@@ -47,7 +47,7 @@ public class Cuenta implements Serializable {
     public int getAntiguedad(){
         return Period.between(this.fecha_apertura,LocalDate.now()).getYears();
     }
-    //Establece una relacion <Mucho a uno> entre la entidad "Cuenta" y entidad "Cliente", cada cuenta esta asociada aun cliente especifico
+    //Establece una relacion <Muchos a uno> entre la entidad "Cuenta" y entidad "Cliente", cada cuenta esta asociada aun cliente especifico
     @ManyToOne
     //Mapea la columna "id_cliente" en la tabla de la BBDD y la usa como una llave foranea haciendo referencia a la tabla "Clientes"
     @JoinColumn(name="id_cliente")

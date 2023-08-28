@@ -33,7 +33,7 @@ const Routers = () => {
         <Route path="/retiro/:id" element={<Retiro />} />
         <Route path="/movimiento/:id" element={<Movimiento />} />
         
-        <Route path="/crear_prestamo/:id" element={<CrearPrestamo />}/>
+        {/* <Route path="/crear_prestamo/:id" element={<CrearPrestamo />}/> */}
         <Route path="/deposito_cuota/:id" element={<DepositoCuota />} />
         
         <Route path="/nueva_cuenta/:id" element={<CrearCuenta />} />

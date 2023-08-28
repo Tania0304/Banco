@@ -44,39 +44,54 @@ public class ClienteController {
     private AdministradorDao administradorDao;
     @Autowired
     private ClienteService clienteService;
-    
+    // Anotación que mapea la solicitud HTTP POST a un método controlador. Cada vez que se invoque una solicitud a la raíz ("/"). 
     @PostMapping(value="/")
+    //Indica que el valor de retorno del metodo debe ser devuelto como la respuesta HTTP 
     @ResponseBody
-    public ResponseEntity<Cliente> agregar(@RequestHeader("clave")String clave,@RequestHeader("usuario")String usuario, @Valid @RequestBody Cliente cliente){   
+    //Esto define un método público llamado "agregar" que toma tres parámetros: "clave", "usuario" y "cliente". "clave" y "usuario" se obtendrán de los encabezados de la solicitud HTTP, y "cliente" se obtendrá del cuerpo de la solicitud.
+    public ResponseEntity<Cliente> agregar(@RequestHeader("clave")String clave,@RequestHeader("usuario")String usuario, @Valid @RequestBody Cliente cliente){
+        //Se crea una instancia de la clase "Administrador" llamada admon   
         Administrador admon=new Administrador();
+        // Autenticación del administrador usando los valores "usuario" y "clave"
         admon=administradorDao.login(usuario, Hash.sha1(clave));
+        //Se verifica que el admninistrador se autentica exitosamente 
         if (admon!=null) {
+            // Encripta la clave del cliente antes de guardarla
             cliente.setClave_cliente(Hash.sha1(cliente.getClave_cliente()));
 
+            // Guarda el cliente y devuelve una respuesta con un estado OK
             return new ResponseEntity<>(clienteService.save(cliente), HttpStatus.OK); 
         } else {
+            // Devuelve una respuesta con estado UNAUTHORIZED si la autenticación falla
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); 
         }
             
     }
     
     //Anotacion que mapea la solicitud HTTP DELETE a un metodo controlador, cada vez que se invoque una solicitud a la ruta "/{id}"
-    @DeleteMapping(value="/{id}") 
-    public ResponseEntity<Cliente> eliminar(@PathVariable String id,@RequestHeader("clave")String clave,@RequestHeader("usuario")String usuario){ 
+    @DeleteMapping(value="/{id}")
+    /*El metodo "eliminar" utiliza los parametros "clave" y "usuario" para realizar la solicitud*/ 
+    public ResponseEntity<Cliente> eliminar(@PathVariable String id,@RequestHeader("clave")String clave,@RequestHeader("usuario")String usuario){
+        //Se crea una instancia de la clase "Administrador" llamada admon
         Administrador admon=new Administrador();
-        //Se autenticara el cliente con un "usuario" y "clave" por medio de "login()" de administradorDao 
+        //Se invoca el metodo login de administradorDao y se verifica la autenticacion del adminitrador y se asigna al objeto "admon"
         admon=administradorDao.login(usuario, Hash.sha1(clave));
-       if (admon!=null) {
-            //Se buscara con "findById()" un cliente con su id y se guardara el objeto "obj" 
+        //Se verifica que el admninistrador se autentica exitosamente 
+        if (admon!=null) {
+            //Se invoca el metodo "findById()" de "clienteServices" para buscar el cliente por su id, si se encuentra se asigna a "obj"
             Cliente obj = clienteService.findById(id); 
+            //Si obj no es null se procedera a borrar el cliente con el "id" proprocionado, si es null, se mostrara un mensaje de ERROR
             if(obj!=null) 
                 //Si el id del cliente es encontrado se eliminara por medio del metodo "delete()"
                 clienteService.delete(id);
-            else 
+            else
+                //Si "obj" es null (no se encontro el id del cliente), se devolvera una respuesta HTTP y mostrara un mensaje de estado INTERNAL_SERVER_ERROR  
                 return new ResponseEntity<>(obj, HttpStatus.INTERNAL_SERVER_ERROR); 
+            //SI la eliminacion se realiza correctamente se devolvera una respuesta HTTP y el estado OK
             return new ResponseEntity<>(obj, HttpStatus.OK); 
       
        } else {
+            //Si al autenticacion del administrador falla se mostrara un mensaje de estado UNAUTHORIZED
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
        }
        
@@ -84,35 +99,46 @@ public class ClienteController {
     }
     
     //Anotacion que mapea la solicitud HTTP PUT a un metodo controlador, cada vez que se invoque una solicitud a la ruta "/"
-    @PutMapping(value="/") 
+    @PutMapping(value="/")
+    //Indica que el valor de retorno del metodo debe ser devuelto como la respuesta HTTP 
     @ResponseBody
+    //El metodo "editar" maneja la solicitud PUT para editar los datos de un cliente, este utiliza los parametros "clave" y "usuario" y un objeto "cliente" para realizar la solicitud
     public ResponseEntity<Cliente> editar(@RequestHeader("clave")String clave,@RequestHeader("usuario")String usuario,@Valid @RequestBody Cliente cliente){ 
+        //Se crea una instancia de la clase "Administrador" llamada admon
         Administrador admon=new Administrador();
         //Se autenticara el cliente con un "usuario" y "clave" por medio de "login()" de administradorDao
         admon=administradorDao.login(usuario, Hash.sha1(clave));
+         //Se verifica que el admninistrador se autentica exitosamente 
         if (admon!=null) {
-            //Se establecerea la clave del cliente encriptada
+            //Por medio de "Hash.sha1" se encripta "clave_cliente" del objeto "cliente"
             cliente.setClave_cliente(Hash.sha1(cliente.getClave_cliente()));
-            //Se buscara un cliente por medio de su id
+            //Se invoca el metodo "findById" para encontrar un cliente con el "id" proporcionado
             Cliente obj = clienteService.findById(cliente.getId_cliente()); 
             if(obj!=null) { 
-                //Se actualiza los datos del cliente y se guardara por medio del metodo "save()"
+                //Se actualiza el valor de "nombre_cliente"
                 obj.setNombre_cliente(cliente.getNombre_cliente());
+                 //Se actualiza el valor de "clave_cliente"
                 obj.setClave_cliente(cliente.getClave_cliente());
+                //Se guarda el objeto "cliente" actulizado en la BBDD
                 clienteService.save(cliente); 
             } 
-            else 
-                return new ResponseEntity<>(obj, HttpStatus.INTERNAL_SERVER_ERROR); 
+            else
+            //Si "obj" es null (no se encontro el id del cliente), se devolvera una respuesta HTTP y mostrara un mensaje de estado INTERNAL_SERVER_ERROR  
+                return new ResponseEntity<>(obj, HttpStatus.INTERNAL_SERVER_ERROR);
+            //SI la edición se realiza correctamente se devolvera una respuesta HTTP y el estado OK  
             return new ResponseEntity<>(obj, HttpStatus.OK); 
         } else {
+            //Si al autenticacion del administrador falla se mostrara un mensaje de estado UNAUTHORIZED
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         
     }
    
     //Anotacion que mapea la solicitud HTTP GET a un metodo controlador, cada vez que se invoque una solicitud a la ruta "/list"
-    @GetMapping("/list") 
+    @GetMapping("/list")
+    //Indica que el valor de retorno del metodo debe ser devuelto como la respuesta HTTP 
     @ResponseBody
+    //Se recibe la información de autenticación (clave y usuario) en los encabezados de la solicitud HTTP mediante las anotaciones @RequestHeader
     public ResponseEntity<List<Cliente>> consultarTodo(@RequestHeader("clave")String clave,@RequestHeader("usuario")String usuario){
         Administrador admon=new Administrador();
         //Se autenticara el cliente con un "usuario" y "clave" por medio de "login()" de administradorDao
@@ -121,52 +147,42 @@ public class ClienteController {
             //Se mostraran todos los datos pertenecientes a los clientes, junto a una notificacion de estado OK
                 return new ResponseEntity<>(clienteService.findAll(),HttpStatus.OK);
         } else {
+            // Si la autenticación falla, se retorna una respuesta de estado UNAUTHORIZED (no autorizado)
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }  
           
     }
-
-    // @GetMapping("/list/contador")
-    // @ResponseBody
-    // public ResponseEntity<Long> contador(@RequestHeader("clave")String clave,@RequestHeader("usuario")String usuario){
-    //     Administrador admon=new Administrador();
-    //     //Se autenticara el cliente con un "usuario" y "clave" por medio de "login()" de administradorDao
-    //     admon=administradorDao.login(usuario, Hash.sha1(clave));
-    //     if (admon!=null) {
-    //         return new ResponseEntity<>(clienteService.countUsers(), HttpStatus.OK);
-    //     } else {
-    //         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    //     }  
-          
-    // }
     
-    //Anotacion que mapea la solicitud HTTP GET a un metodo controlador, cada vez que se invoque una solicitud a la ruta "/list{id}"
-    @GetMapping("/list/{id}") 
+    //Se utiliza la anotación @GetMapping para mapear una solicitud HTTP GET a este método. El segmento {id} en la anotación de mapeo indica que se espera un valor de id en la URL.
+    @GetMapping("/list/{id}")
+    //Esta anotación indica que el resultado del método se utilizará directamente como el cuerpo de la respuesta HTTP. 
     @ResponseBody
     public ResponseEntity<Cliente> consultaPorId(@PathVariable String id,@RequestHeader("clave")String clave,@RequestHeader("usuario")String usuario){ 
+        // Se crea una instancia de Administrador para almacenar el resultado de la autenticación
         Administrador admon=new Administrador();
+        //Se autentica el adminitrador usando los valores "usuario" y "clave"
         admon=administradorDao.login(usuario, Hash.sha1(clave));
+        // Se verifica si la autenticación fue exitosa
         if (admon!=null) {
-            /*Por medio del "id" tomado en la ruta URL se buscara por medio de la funcion "findById" el cliente correspondiente a dicho "Id"
-            y se motrara la informacion junto a una notificacion de estado OK*/ 
+            // Si el administrador está autenticado, se busca un cliente por su ID y se retorna su información con una respuesta de estado OK
             return new ResponseEntity<>(clienteService.findById(id),HttpStatus.OK);
         } else {
+            // Si la autenticación falla, se retorna una respuesta de estado UNAUTHORIZED (no autorizado)
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }   
     }
-
-    // @RequestHeader(value = "clave", required = false, defaultValue = "valor_predeterminado")
     
-    //Anotacion que mapea la solicitud HTTP GET a un metodo controlador, cada vez que se invoque una solicitud a la ruta "/login"
+    //Esta anotación indica que este método responderá a las solicitudes HTTP GET en la ruta "/login".
     @GetMapping("/login")
+    //Esta anotación indica que el resultado del método se utilizará directamente como el cuerpo de la respuesta HTTP.
     @ResponseBody
     //Se obtendran los valores de los parametros "usuario" y "clave" y se asignaran a las variable correspondientes
     public Cliente ingresar(@RequestParam ("usuario") String usuario,@RequestParam ("clave") String clave) {
+        //Aquí se aplica una función de hash SHA-1 a la clave proporcionada. La clave se encripta antes de ser utilizada en la autenticación.
         clave=Hash.sha1(clave);
-        //Se pasara el "usuario" y "clave" al metodo login el cual correspondera si la autenticacion fue exitosa
+        //Finalmente, se llama al método "login" del servicio "clienteService" y se pasan los valores de "usuario" y "clave" como argumentos. Este método verificará si la autenticación es exitosa y devolverá un objeto de tipo "Cliente".
         return clienteService.login(usuario, clave); 
     }
-   
 
 }
 

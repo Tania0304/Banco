@@ -53,8 +53,4 @@ public class ClienteService {
         return clienteDao.login(usuario, clave);
     }
 
-    // @Transactional(readOnly = false)
-    // public void registrarse(Cliente cliente){
-    //     clienteDao.registrarse(cliente.getId_cliente(), cliente.getNombre_cliente(), cliente.getClave_cliente());
-    // }
 }

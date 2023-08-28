@@ -33,11 +33,9 @@ public class Prestamo implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_prestamo")
     private int id_prestamo;
-        //@NotEmpty(message = "El campo fecha de apertura no debe ser vacío")
     
     @Column(name="fecha_solicitud")
     private LocalDate fecha_solicitud;
-        //@NotEmpty(message = "El campo saldo de la cuenta no debe ser vacío")
     
     @Column(name="saldo_solicitado")
     @Min(value = 500000, message = "El campo saldo solicitado debe ser mayor o igual a 500000")
@@ -51,38 +49,32 @@ public class Prestamo implements Serializable {
 
     @Column(name ="valor_cuota")
     private double valor_cuota;
+    // El método getValor_cuota se calcula basado en el saldo_solicitado y el número de cuotas
     public double getValor_cuota(){
         return valor_cuota = this.saldo_solicitado/this.n_cuotas;
     } 
 
     @Column(name="saldo_pendiente")
     private double saldo_pendiente;
+    // El método getSaldo_pendiente siempre retorna el saldo_solicitado
     public double getSaldo_pendiente(Double saldo_solicitado){
         return saldo_pendiente = this.saldo_solicitado;
     } 
 
-    /**
-     *
-     */
+    //Mapea la columna "id_cuenta" en la tabla de la BBDD y la usa como una llave foranea haciendo referencia a la tabla "Cuenta"
     @OneToOne
     @JoinColumn(name ="id_cuenta")
     private Cuenta cuenta;
 
-
+    //Mapea la columna "id_cliente" en la tabla de la BBDD y la usa como una llave foranea haciendo referencia a la tabla "Cliente"
     @ManyToOne
-    // //Mapea la columna "id_cliente" en la tabla de la BBDD y la usa como una llave foranea haciendo referencia a la tabla "Clientes"
     @JoinColumn(name="id_cliente")
     private Cliente cliente;
     
-    //"toString" es un metodo que devolvera todos campos de la clase "Cuenta" como una cadena de texto //
+    //"toString" es un metodo que devolvera todos campos de la clase "Prestamo" como una cadena de texto //
     @Override
     public String toString() {
         return "Prestamo [id_prestamo=" + id_prestamo + ", fecha_solicitud=" + fecha_solicitud +", saldo_solicitado="+saldo_solicitado +", n_cuotas=" + n_cuotas + ", valor_cuota=" + valor_cuota +", id_cliente="+ cliente+ ", cuenta="+ cuenta +"]";
-    }
-    // +", saldo_pendiente="+ saldo_pendiente+
-
-    public double setValor_cuota(double d) {
-        return 0;
     }
     
 

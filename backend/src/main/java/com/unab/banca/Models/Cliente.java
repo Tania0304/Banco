@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-//Se generaran los metodos Getter y Setter de forma automarica
+//Se generaran los metodos Getter y Setter de forma automática
 @Getter
 @Setter
 
@@ -31,17 +31,17 @@ public class Cliente  implements Serializable{
     //Anotacion que indica que el campo "id_cliente" no debe esta vacio y si lo esta se generara un mensaje de error con el mensaje suministrado
     @NotEmpty(message = "El campo identificador del  cliente no debe ser vacío")
     @Column(name="id_cliente", unique = true)
-
-
     private String id_cliente;
 
     /*La anotacion "NotEmpty" y "Size" indican que las restricciones de los campos "id_cliente" y "nombre_cliente", indicando
-     *que estos no deben estar vacios y que tienen un tamaño minimo y maximo especificado, si estas restricciones no se cumplen
-     *se generar un mensaje de error correspondiente.*/
+     * que estos no deben estar vacios y que tienen un tamaño minimo y maximo especificado, si estas restricciones no se cumplen
+     * se generar un mensaje de error correspondiente.*/
     @NotEmpty(message = "El campo nombre cliente no debe ser vacío")
     @Size(min = 5, max = 80,message = "El campo nombre Cliente debe tener mínimo 5 caracteres y máximo 80")
     @Column(name="nombre_cliente")
     private String nombre_cliente;
+
+    
     @NotEmpty(message = "El campo clave cliente no debe ser vacío")
     @Size(min = 5, max = 80,message = "El campo nombre Cliente debe tener mínimo 5 caracteres y máximo 50")
     

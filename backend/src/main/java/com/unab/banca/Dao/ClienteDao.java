@@ -13,30 +13,24 @@ import java.util.List;
 import java.util.Optional;
 
 
-//Indica que la entidad cliente, sera utilizada para interactuar con el codigo de ClienteDao el cual administra la base de datos
+// Anotación que indica que la clase es un componente de acceso a datos (DAO)
 @Repository 
 
-//Se indica que la interfaz clienteDAO heredara los metodos de CrudRepository del modelo de trabajo JPA y posibilitara realizar acciones tipo CRUD en la clase Cliente
+// Definición de la interfaz ClienteDao
 public interface ClienteDao extends CrudRepository< Cliente, String>  {
     
   
 
     //Operación de Autenticación (SELECT)
-    @Transactional(readOnly=true)//No afecta integridad base de datos, solo generara una lectura de la BBDD
+    @Transactional(readOnly=true)// Indica que la operación es de solo lectura y no afectará la integridad de la base de datos
     @Query(value="SELECT * FROM cliente WHERE id_cliente= :usuario AND clave_cliente= :clave", nativeQuery=true)
-    
-    //"login" generara una operacion de autenticacion del usuario y clave, utilizando el @Query para comparar los datos ingresados con la BBDD
-    //Metodo que establece parametros "usuario" y "cliente", los cuales pasaran su informacion a los marcadores de posicion ":usuario" y ":clave" 
-    //y estos indicaran donde se colocaran los valores asignados dentro de la consulta SQL
+    // Método que realiza la autenticación de un cliente por medio de su usuario y clave
     public Cliente login(@Param("usuario") String usuario, @Param("clave") String clave);
 
-    
-    // @Transactional(readOnly = true)
-    // @Query(value = "SELECT COUNT(*) FROM cliente", nativeQuery=true)
-    // public Long countUsers();
-   
-    @Transactional(readOnly = false)
-    @Modifying
+   // Operación de Registro (INSERT)
+    @Transactional(readOnly = false) // Indica que la operación no es de solo lectura y puede afectar la base de datos
+    @Modifying // Indica que la operación modificará la base de datos
     @Query(value = "INSERT INTO cliente (id_cliente, nombre_cliente, clave_cliente) VALUES (:usuario, :nombre, :clave)", nativeQuery = true)
+    // Método que permite a un cliente registrarse en la base de datos
     public int registrarse(@Param("usuario") String usuario, @Param("nombre") String nombre, @Param("clave") String clave);
 }

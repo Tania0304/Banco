@@ -51,7 +51,7 @@ public class Transaccion implements Serializable {
     @JoinColumn(name="id_cuenta")
     private Cuenta cuenta;
 
-    //"toString" es un metodo que devolvera todos campos de la clase "Cuenta" como una cadena de texto //
+    //"toString" es un metodo que devolvera todos campos de la clase "Transaccion" como una cadena de texto //
     @Override
     public String toString() {
         return "Transaccion [id_transaccion=" + id_transaccion + ", fecha_transaccion=" + fecha_transaccion

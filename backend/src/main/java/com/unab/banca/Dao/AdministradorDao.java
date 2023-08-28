@@ -8,9 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.unab.banca.Models.Administrador;
 
+// Definición de la interfaz AdministradorDao
 public interface AdministradorDao extends CrudRepository<Administrador,String> {
-    //Operación de Autentiiicación (SELECT)
-    @Transactional(readOnly=true)//No afecta integridad base de datos
+    //Operación de Autenticación (SELECT)
+    @Transactional(readOnly=true)// Indica que la operación es de solo lectura y no afectará la integridad de la base de datos
     @Query(value="SELECT * FROM administrador WHERE id_administrador= :usuario AND clave_administrador= :clave", nativeQuery=true)
+    
+    // Método que realiza la autenticación de un administrador por medio de su usuario y clave
     public Administrador login(@Param("usuario") String usuario, @Param("clave") String clave); 
 }
